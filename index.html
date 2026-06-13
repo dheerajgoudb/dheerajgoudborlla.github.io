@@ -22,150 +22,212 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
     font-family: 'Inter', system-ui, sans-serif;
     background: var(--paper);
     color: var(--slate);
     line-height: 1.6;
+    overflow-x: hidden; /* prevents sideways shift on mobile */
   }
-  .display { font-family: 'Archivo', system-ui, sans-serif; }
   .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
-  .wrap { max-width: 1024px; margin: 0 auto; padding: 0 20px; }
+  .wrap { max-width: 1024px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
   a { color: inherit; text-decoration: none; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  img { max-width: 100%; }
 
-  /* Status bar */
+  /* ——— Scroll-reveal animation ——— */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .hero-anim { animation: none !important; opacity: 1 !important; }
+  }
+
+  /* ——— Status bar ——— */
   .status { background: var(--ink); }
   .status .wrap {
-    display: flex; flex-wrap: wrap; gap: 6px 22px; align-items: center;
+    display: flex; flex-wrap: wrap; gap: 4px 22px; align-items: center;
     padding-top: 8px; padding-bottom: 8px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #9FB3CC;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9FB3CC;
     letter-spacing: 0.04em;
   }
-  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 8px; }
+  .dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ok); margin-right: 8px;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0.45); }
+    50% { box-shadow: 0 0 0 5px rgba(22,163,74,0); }
+  }
   .status .hide-sm { display: none; }
   @media (min-width: 640px) { .status .hide-sm { display: inline; } }
 
-  /* Nav */
+  /* ——— Nav (mobile-safe) ——— */
   nav {
     position: sticky; top: 0; z-index: 20;
-    background: rgba(246,248,251,0.92); backdrop-filter: blur(8px);
+    background: rgba(246,248,251,0.94); backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
   }
-  nav .wrap { height: 56px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 19px; color: var(--ink); letter-spacing: -0.02em; }
+  nav .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; min-height: 54px; flex-wrap: wrap;
+    padding-top: 8px; padding-bottom: 8px;
+  }
+  .logo { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 19px; color: var(--ink); letter-spacing: -0.02em; white-space: nowrap; }
   .logo span { color: var(--accent); }
-  .nav-links { display: flex; gap: 18px; font-size: 14px; }
-  .nav-links a { color: var(--slate); }
+  .nav-links {
+    display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px;
+    max-width: 100%;
+  }
+  .nav-links a { color: var(--slate); white-space: nowrap; }
   .nav-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
-  @media (min-width: 640px) { .nav-links { gap: 26px; } }
+  @media (min-width: 640px) { .nav-links { gap: 26px; font-size: 14px; } }
 
-  /* Hero */
-  header.hero { padding: 70px 0 60px; }
-  @media (min-width: 640px) { header.hero { padding: 100px 0 84px; } }
-  .kicker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px; }
+  /* ——— Hero ——— */
+  header.hero { padding-top: 56px; padding-bottom: 52px; }
+  @media (min-width: 640px) { header.hero { padding-top: 96px; padding-bottom: 80px; } }
+  .hero-anim { opacity: 0; animation: rise .7s ease forwards; }
+  .hero-anim.d1 { animation-delay: .08s; }
+  .hero-anim.d2 { animation-delay: .18s; }
+  .hero-anim.d3 { animation-delay: .3s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.16em; color: var(--accent); margin-bottom: 14px; }
   h1 {
     font-family: 'Archivo', sans-serif; font-weight: 800; color: var(--ink);
-    font-size: clamp(34px, 6vw, 58px); line-height: 1.1; letter-spacing: -0.02em; max-width: 760px;
+    font-size: clamp(30px, 7.5vw, 58px); line-height: 1.12; letter-spacing: -0.02em; max-width: 760px;
+    overflow-wrap: break-word;
   }
-  .summary { margin-top: 24px; max-width: 620px; font-size: 17px; }
-  .cta-row { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .summary { margin-top: 22px; max-width: 620px; font-size: 16px; }
+  @media (min-width: 640px) { .summary { font-size: 17px; } }
+  .cta-row { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; }
   .btn {
-    display: inline-block; padding: 11px 22px; border-radius: 5px;
-    font-size: 14px; font-weight: 600; transition: background .15s, color .15s;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 5px;
+    font-size: 14px; font-weight: 600; transition: background .15s, color .15s, transform .15s;
   }
+  .btn:active { transform: scale(0.98); }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: var(--accent-dark); }
   .btn-ghost { border: 1px solid var(--accent); color: var(--accent); }
   .btn-ghost:hover { background: var(--accent); color: #fff; }
+  .btn-resume { border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); }
+  .btn-resume:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* Sections */
-  section { border-top: 1px solid var(--line); padding: 60px 0; }
+  /* ——— Sections ——— */
+  section { border-top: 1px solid var(--line); padding: 52px 0; }
   @media (min-width: 640px) { section { padding: 84px 0; } }
-  .sec-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.18em; color: var(--accent); }
+  .sec-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.16em; color: var(--accent); }
   h2 {
     font-family: 'Archivo', sans-serif; font-weight: 700; color: var(--ink);
-    font-size: clamp(28px, 4.5vw, 38px); letter-spacing: -0.02em; margin-top: 8px;
+    font-size: clamp(26px, 6vw, 38px); letter-spacing: -0.02em; margin-top: 8px;
   }
   .sec-note { margin-top: 8px; font-size: 14px; color: var(--mute); }
 
-  /* Skills */
-  .skill-grid { display: grid; gap: 18px; margin-top: 32px; }
-  @media (min-width: 640px) { .skill-grid { grid-template-columns: 1fr 1fr; } }
-  .skill-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
-  .skill-card h3 { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-weight: 500; letter-spacing: 0.16em; color: var(--mute); margin-bottom: 14px; }
+  /* ——— Skills ——— */
+  .skill-grid { display: grid; gap: 16px; margin-top: 30px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .skill-grid { grid-template-columns: 1fr 1fr; gap: 18px; } }
+  .skill-card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+  .skill-card h3 { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.14em; color: var(--mute); margin-bottom: 13px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip {
-    padding: 5px 13px; border-radius: 999px; font-size: 13.5px;
+    padding: 5px 12px; border-radius: 999px; font-size: 13px;
     border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft);
+    transition: border-color .15s;
   }
+  .chip:hover { border-color: var(--accent); }
 
-  /* Experience pipeline */
-  .pipeline { position: relative; margin-top: 40px; }
+  /* ——— Experience pipeline ——— */
+  .pipeline { position: relative; margin-top: 36px; }
   .pipeline::before {
     content: ""; position: absolute; left: 11px; top: 8px; bottom: 8px;
     width: 1px; background: var(--line);
   }
-  .job { position: relative; padding-left: 42px; }
-  .job + .job { margin-top: 44px; }
+  .job { position: relative; padding-left: 40px; }
+  .job + .job { margin-top: 42px; }
   .node {
     position: absolute; left: 0; top: 4px; width: 23px; height: 23px;
     border-radius: 50%; border: 4px solid var(--accent); background: var(--card);
   }
   .job-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
   .stage {
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.18em;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.16em;
     background: var(--ink); color: #BFD3EC; padding: 3px 9px; border-radius: 4px;
   }
-  .job h3 { font-family: 'Archivo', sans-serif; font-size: 20px; font-weight: 700; color: var(--ink); }
-  .job-meta { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--mute); margin-top: 4px; }
-  .job ul { list-style: none; margin-top: 14px; }
-  .job li { position: relative; padding-left: 18px; font-size: 15px; margin-bottom: 9px; }
+  .job h3 { font-family: 'Archivo', sans-serif; font-size: 19px; font-weight: 700; color: var(--ink); }
+  .job-meta { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--mute); margin-top: 4px; }
+  .job ul { list-style: none; margin-top: 13px; }
+  .job li { position: relative; padding-left: 18px; font-size: 14.5px; margin-bottom: 9px; }
   .job li::before {
     content: ""; position: absolute; left: 0; top: 9px;
     width: 6px; height: 6px; border-radius: 2px; background: var(--accent);
   }
 
-  /* Projects */
-  .proj-grid { display: grid; gap: 18px; margin-top: 32px; }
-  @media (min-width: 768px) { .proj-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  /* ——— Projects ——— */
+  .proj-grid { display: grid; gap: 16px; margin-top: 30px; grid-template-columns: 1fr; }
+  @media (min-width: 768px) { .proj-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; } }
   .proj {
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
-    padding: 20px; display: flex; flex-direction: column; transition: box-shadow .15s;
+    padding: 20px; display: flex; flex-direction: column;
+    transition: box-shadow .2s, transform .2s;
   }
-  .proj:hover { box-shadow: 0 4px 16px rgba(14,27,44,0.08); }
-  .proj-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 12px; }
-  .proj h3 { font-family: 'Archivo', sans-serif; font-size: 17.5px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .proj:hover { box-shadow: 0 6px 20px rgba(14,27,44,0.1); transform: translateY(-2px); }
+  .proj-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 11px; }
+  .proj h3 { font-family: 'Archivo', sans-serif; font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
   .proj p.desc { font-size: 14px; flex: 1; }
   .proj .hl {
     margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line);
-    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--mute);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--mute);
   }
 
-  /* Contact */
+  /* ——— Certifications & Education ——— */
+  .cert-grid { display: grid; gap: 16px; margin-top: 30px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .cert-grid { grid-template-columns: 1fr 1fr; gap: 18px; } }
+  .cert {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 20px; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .cert-badge {
+    flex-shrink: 0; width: 46px; height: 46px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 15px;
+    background: var(--ink); color: #BFD3EC;
+  }
+  .cert-badge.gcp { background: linear-gradient(135deg, #1F5FAD, #15406F); color: #fff; }
+  .cert h3 { font-family: 'Archivo', sans-serif; font-size: 16px; font-weight: 700; color: var(--ink); }
+  .cert p { font-size: 13.5px; margin-top: 4px; }
+  .cert .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--mute); margin-top: 8px; }
+  .cert-link {
+    display: inline-block; margin-top: 10px;
+    font-size: 13px; font-weight: 600; color: var(--accent);
+  }
+  .cert-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ——— Contact ——— */
   .contact { background: var(--ink); border-top: none; }
   .contact .sec-kicker { color: #7FA4D0; }
   .contact h2 { color: #fff; }
-  .contact p.lead { margin-top: 16px; max-width: 560px; color: #A9BBD4; font-size: 15.5px; }
-  .contact-row { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; }
+  .contact p.lead { margin-top: 16px; max-width: 560px; color: #A9BBD4; font-size: 15px; }
+  .contact-row { margin-top: 30px; display: flex; flex-direction: column; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; }
   @media (min-width: 640px) { .contact-row { flex-direction: row; } }
-  .c-btn { padding: 13px 22px; border-radius: 5px; text-align: center; }
+  .c-btn { padding: 13px 22px; border-radius: 5px; text-align: center; transition: opacity .15s, border-color .15s; word-break: break-all; }
   .c-primary { background: #fff; color: var(--ink); font-weight: 600; }
+  .c-primary:hover { opacity: .9; }
   .c-ghost { border: 1px solid #3D5170; color: #CFE0F5; }
   .c-ghost:hover { border-color: #7FA4D0; }
-  .foot { margin-top: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #5C7191; }
+  .foot { margin-top: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #5C7191; }
 </style>
 </head>
 <body id="top">
 
-<!-- ▸ EDIT YOUR INFO: search for "EDIT" comments throughout this file -->
+<!-- ▸ Search for "EDIT" to find every spot to personalize -->
 
 <div class="status">
   <div class="wrap">
-    <span><span class="dot"></span>STATUS: OPEN TO NEW DATA ENGINEERING ROLES</span>
-    <span class="hide-sm">EXP: 7 YRS</span>
-    <span class="hide-sm">UPTIME MINDSET: 99.99%</span>
+    <span><span class="dot"></span>STATUS: OPEN TO DATA ENGINEERING & AI ROLES</span>
+    <!-- <span class="hide-sm">EXP: 7 YRS</span>
+    <span class="hide-sm">UPTIME MINDSET: 99.99%</span> -->
   </div>
 </div>
 
@@ -177,38 +239,45 @@
       <a href="#skills">Skills</a>
       <a href="#experience">Experience</a>
       <a href="#projects">Projects</a>
+      <a href="#credentials">Credentials</a>
       <a href="#contact">Contact</a>
     </div>
   </div>
 </nav>
 
 <header class="hero wrap" id="about">
-  <p class="kicker">DATA ENGINEER · SRE FOUNDATION</p>
-  <h1>I build data pipelines with the discipline of a reliability engineer.</h1>
-  <p class="summary">
-    7 years of engineering experience across data platforms and site reliability.
+  <p class="kicker hero-anim">DATA ENGINEER · SRE FOUNDATION · AI AUTOMATION</p>
+  <h1 class="hero-anim d1">I build data pipelines that don't break — and AI systems that run themselves.</h1>
+  <p class="summary hero-anim d2">
+    8 years of engineering experience across data platforms and site reliability.
     I design batch and streaming pipelines that are observable, testable, and built
-    to survive 3&nbsp;a.m. — because I used to be the one paged at 3&nbsp;a.m.
+    to survive 3&nbsp;a.m. — then layer in AI to make them self-monitoring, automated, and genuinely robust.
+     Reliability engineering meets generative AI.
   </p>
-  <div class="cta-row">
+  <div class="cta-row hero-anim d3">
     <a class="btn btn-primary" href="#projects">View projects</a>
     <a class="btn btn-ghost" href="#contact">Get in touch</a>
+    <!-- Resume button: upload resume.pdf to the same GitHub repo, then this link works -->
+    <!-- <a class="btn btn-resume" href="resume.pdf" target="_blank" rel="noreferrer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Resume
+    </a> -->
   </div>
 </header>
 
 <section id="skills">
   <div class="wrap">
-    <p class="sec-kicker">CAPABILITIES</p>
-    <h2>Skills</h2>
+    <p class="sec-kicker reveal">CAPABILITIES</p>
+    <h2 class="reveal">Skills</h2>
     <div class="skill-grid">
-      <div class="skill-card">
+      <div class="skill-card reveal">
         <h3>LANGUAGES &amp; QUERYING</h3>
         <div class="chips">
           <span class="chip">Python</span><span class="chip">SQL (advanced)</span>
           <span class="chip">Bash</span><span class="chip">PySpark</span>
         </div>
       </div>
-      <div class="skill-card">
+      <div class="skill-card reveal">
         <h3>DATA PLATFORM</h3>
         <div class="chips">
           <span class="chip">Apache Spark</span><span class="chip">Kafka</span>
@@ -216,7 +285,7 @@
           <span class="chip">dbt</span><span class="chip">Data Modeling</span>
         </div>
       </div>
-      <div class="skill-card">
+      <div class="skill-card reveal">
         <h3>CLOUD &amp; INFRASTRUCTURE</h3>
         <div class="chips">
           <span class="chip">GCP</span><span class="chip">AWS</span>
@@ -224,7 +293,7 @@
           <span class="chip">Terraform</span><span class="chip">CI/CD</span>
         </div>
       </div>
-      <div class="skill-card">
+      <div class="skill-card reveal">
         <h3>RELIABILITY &amp; OBSERVABILITY</h3>
         <div class="chips">
           <span class="chip">Monitoring &amp; Alerting</span><span class="chip">SLOs / SLIs</span>
@@ -238,18 +307,18 @@
 
 <section id="experience">
   <div class="wrap">
-    <p class="sec-kicker">THE PIPELINE</p>
-    <h2>Experience</h2>
-    <p class="sec-note">Career as a data pipeline — most recent stage first.</p>
+    <p class="sec-kicker reveal">THE PIPELINE</p>
+    <h2 class="reveal">Experience</h2>
+    <!-- <p class="sec-note reveal">Career as a data pipeline — most recent stage first.</p> -->
     <div class="pipeline">
 
-      <div class="job">
+      <div class="job reveal">
         <div class="node"></div>
         <div class="job-head">
-          <span class="stage">TRANSFORM</span>
+          <!-- <span class="stage">TRANSFORM</span> -->
           <h3>Data Engineer</h3>
         </div>
-        <p class="job-meta">Company Name · 2023 — Present</p> <!-- EDIT -->
+        <p class="job-meta">American Express · 2023 — Present</p> <!-- EDIT -->
         <ul>
           <li>Designed and maintained batch + streaming pipelines processing high-volume event data with Spark and Kafka.</li>
           <li>Built Airflow DAGs with built-in data quality gates, lineage, and alerting — pipeline failures caught before stakeholders notice.</li>
@@ -257,31 +326,49 @@
         </ul>
       </div>
 
-      <div class="job">
+      <div class="job reveal">
         <div class="node"></div>
         <div class="job-head">
-          <span class="stage">INGEST</span>
-          <h3>Data Engineer</h3>
+          <!-- <span class="stage">INGEST</span> -->
+          <h3>Snowflake Engineer (Cloud)</h3>
         </div>
-        <p class="job-meta">Company Name · 2021 — 2023</p> <!-- EDIT -->
+        <p class="job-meta">ATT · 2022 — 2023</p> <!-- EDIT -->
         <ul>
-          <li>Migrated legacy ETL jobs to a modern orchestrated stack, improving reliability and reducing manual reruns.</li>
-          <li>Developed reusable ingestion frameworks for third-party APIs and internal services.</li>
-          <li>Introduced testing and CI practices to the data codebase, raising deploy confidence.</li>
+          <li>Developed pipelines for migrating on-prem (Teradata) data sources to Cloud Data Warehouse (Snowflake).</li>
+          <li>Optimized query performance and reduced data latency by implementing efficient data modeling techniques.</li>
+          <li>Collaborated with cross-functional teams to integrate Snowflake with BI tools, enabling self-service analytics.</li>
+          <li>Implemented data validation and monitoring frameworks to ensure data quality and reliability post-migration.</li>
+          <li>Architected and implemented a data lake solution using Snowflake's cloud data platform.</li>
         </ul>
       </div>
 
-      <div class="job">
+      <div class="job reveal">
         <div class="node"></div>
         <div class="job-head">
-          <span class="stage">FOUNDATION</span>
-          <h3>Site Reliability Engineer / DevOps</h3>
+          <!-- <span class="stage">FOUNDATION</span> -->
+          <h3>Big Data Engineer (Site Reliability Engineer)</h3>
         </div>
-        <p class="job-meta">Company Name · 2017 — 2021</p> <!-- EDIT -->
+        <p class="job-meta">Company Name · 2020 — 2022</p> <!-- EDIT -->
         <ul>
           <li>Owned uptime for production distributed systems: monitoring, alerting, capacity planning, and incident response.</li>
+          <li>Implemented SLOs and error budgets for data pipelines, shifting the team to a proactive reliability mindset.</li>
+          <li>Built internal tools to automate toil and improve observability, reducing manual intervention and incident resolution times.</li>
           <li>Automated infrastructure with IaC and built CI/CD pipelines used across engineering teams.</li>
           <li>Led post-incident reviews and drove reliability improvements that reduced repeat incidents.</li>
+        </ul>
+      </div>
+
+      <div class="job reveal">
+        <div class="node"></div>
+        <div class="job-head">
+          <!-- <span class="stage">FOUNDATION</span> -->
+          <h3>Data Anlyticas Engineer</h3>
+        </div>
+        <p class="job-meta">Verizon · 2018 — 2020</p> <!-- EDIT -->
+        <ul>
+          <li>Developed scalable data orchestration capable of handling vast amounts of structured and unstructured data, improving overall system performance.</li>
+          <li>Engineered data pipelines using technologies like Hive, Spark, Scala and scheduling the jobs using Oozie Workflow Scheduler.</li>
+          <li>Developed Statistical techniques, quantitative methodologies and feature engineering for data modelling.</li>
         </ul>
       </div>
 
@@ -291,25 +378,25 @@
 
 <section id="projects">
   <div class="wrap">
-    <p class="sec-kicker">SHIPPED</p>
-    <h2>Projects</h2>
+    <p class="sec-kicker reveal">SHIPPED</p>
+    <h2 class="reveal">Projects</h2>
     <div class="proj-grid">
 
-      <div class="proj">
+      <div class="proj reveal">
         <p class="proj-tag">Airflow · BigQuery · GCP</p>
         <h3>GCP Analytics Pipeline</h3>
         <p class="desc">End-to-end data platform on Google Cloud: orchestrated ingestion with Airflow (Cloud Composer), staged transformations into BigQuery, partitioned and clustered warehouse tables, and data quality checks wired into alerting.</p>
         <p class="hl">▸ Production-style architecture, not a toy demo</p>
       </div>
 
-      <div class="proj">
+      <div class="proj reveal">
         <p class="proj-tag">React · LLM APIs · Live Web Data</p>
         <h3>APEX INTEL — Market Data Terminal</h3>
         <p class="desc">AI-powered options analysis terminal with distinct swing-trade and intraday modes. Enforces a two-step retrieval loop so every analysis is grounded in live market data rather than stale model knowledge.</p>
         <p class="hl">▸ Real-time data + AI orchestration</p>
       </div>
 
-      <div class="proj">
+      <div class="proj reveal">
         <p class="proj-tag">React · AI Search · Mobile-first</p>
         <h3>AI Meal Tracker</h3>
         <p class="desc">Personal nutrition tracker with item-level macro logging and AI-powered auto-population of nutrition data via web search. Designed mobile-first for daily real-world use.</p>
@@ -320,19 +407,77 @@
   </div>
 </section>
 
+<section id="credentials">
+  <div class="wrap">
+    <p class="sec-kicker reveal">VERIFIED</p>
+    <h2 class="reveal">Certifications &amp; Education</h2>
+    <div class="cert-grid">
+
+      <div class="cert reveal">
+        <div class="cert-badge gcp">G</div>
+        <div>
+          <h3>Google Cloud Professional Data Engineer</h3>
+          <p>Certified in designing, building, and operationalizing data processing systems on Google Cloud.</p>
+          <p class="meta">GOOGLE CLOUD · CERTIFIED . Issued Feb 2026 · Expires Feb 2028</p> <!-- EDIT: add year, e.g. CERTIFIED 2025 -->
+          <!-- EDIT: paste your credential URL below (from Credly or Google's certification directory) -->
+          <a class="cert-link" href="https://www.credly.com/badges/3c497561-93f1-4d21-a457-3b4d8fe927e8/public_url" target="_blank" rel="noreferrer">Verify credential →</a>
+        </div>
+      </div>
+
+      <div class="cert reveal">
+        <div class="cert-badge gcp">G</div>
+        <div>
+          <h3>Google Cloud Certified Associate Cloud Engineer</h3>
+          <p>Certified in designing, building, and operationalizing data processing systems on Google Cloud.</p>
+          <p class="meta">GOOGLE CLOUD · CERTIFIED . Issued Jan 2025 · Expires Jan 2028</p> <!-- EDIT: add year, e.g. CERTIFIED 2025 -->
+          <!-- EDIT: paste your credential URL below (from Credly or Google's certification directory) -->
+          <a class="cert-link" href="https://www.credly.com/badges/88e74cbb-3332-4c44-841e-5c77c12c8236/public_url" target="_blank" rel="noreferrer">Verify credential →</a>
+        </div>
+      </div>
+
+      <div class="cert reveal">
+        <div class="cert-badge">MS</div>
+        <div>
+          <h3>M.S. Computer Science</h3>
+          <p>Specialization in Data Science — machine learning, statistical methods, and large-scale data systems.</p>
+          <p class="meta">UNIVERSITY OF TEXAS, DALLAS · 2017</p> <!-- EDIT -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section class="contact" id="contact">
   <div class="wrap">
-    <p class="sec-kicker">INITIATE HANDSHAKE</p>
-    <h2>Let's build something reliable.</h2>
-    <p class="lead">Currently exploring Data Engineering roles. If your pipelines need someone who treats data like production, let's talk.</p>
-    <div class="contact-row">
+    <p class="sec-kicker reveal">INITIATE HANDSHAKE</p>
+    <h2 class="reveal">Let's build something reliable.</h2>
+    <p class="lead reveal">Currently exploring Data Engineering roles. If your pipelines need someone who treats data like production, let's talk.</p>
+    <div class="contact-row reveal">
       <!-- EDIT: replace with your real links -->
       <a class="c-btn c-ghost" href="https://www.linkedin.com/in/bdheerajgoud6/" target="_blank" rel="noreferrer">LinkedIn</a>
       <a class="c-btn c-ghost" href="https://github.com/dheerajgoudb" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="c-btn c-ghost" href="mailto:dheerajgoud6@gmail.com<">Email</a>
     </div>
-    <p class="foot">United States © 2026 Dheeraj Goud Borlla</p>
+    <p class="foot">United States · Open to new Roles · © 2026 Dheeraj</p>
   </div>
 </section>
+
+<script>
+  // Scroll-reveal: elements fade up as they enter the viewport
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targets = document.querySelectorAll('.reveal');
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    targets.forEach(el => el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(el => io.observe(el));
+  }
+</script>
 
 </body>
 </html>
